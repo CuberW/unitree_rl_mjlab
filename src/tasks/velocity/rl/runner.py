@@ -24,5 +24,10 @@ class VelocityOnPolicyRunner(MjlabOnPolicyRunner):
     onnx_path = os.path.join(policy_path, filename)
     metadata = get_base_metadata(self.env.unwrapped, run_name)
     attach_metadata_to_onnx(onnx_path, metadata)
-    if self.logger.logger_type in ["wandb"]:
+    upload_model = (
+      self.cfg.get("upload_model", False)
+      if isinstance(self.cfg, dict)
+      else getattr(self.cfg, "upload_model", False)
+    )
+    if self.logger.logger_type in ["wandb"] and upload_model:
       wandb.save(policy_path + filename, base_path=os.path.dirname(policy_path))
